@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\post\PutRequest;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -21,9 +22,11 @@ class PostController extends Controller
      */
     public function index()
     {
+        //dd(Category::find(1)->posts);
+        
         $posts = Post::paginate(2);
         return view('dashboard.post.index', compact('posts'));
-        //
+        
     }
 
     /**
@@ -35,11 +38,12 @@ class PostController extends Controller
     {
         //$categories = Category::get();
         $categories = Category::pluck('id', 'title');
+        $post = new Post();
 
         
 
         //dd($categories[1]);
-        echo view('dashboard.post.create', compact('categories'));
+        echo view('dashboard.post.create', compact('categories', 'post'));
         //
     }
 
@@ -69,6 +73,9 @@ class PostController extends Controller
         // dd($data);
 
         Post::create($request->validated());
+        
+        return to_route('post.index')->with('status', 'Registro creado');
+        
     }
 
     /**
@@ -79,7 +86,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        //
+        return view("dashboard.post.show", compact('post'));
     }
 
     /**
@@ -102,9 +109,22 @@ class PostController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Post $post)
+    public function update(PutRequest $request, Post $post)
     {
-        //
+        $data = $request->validated();
+        if(isset($data['image'])){
+            //dd($request->image);
+            
+            //dd($request->validated()['image']->extension());
+
+            $data['image'] = $filename = time().".".$data['image']->extension();
+            
+            $request->image->move(public_path('image'), $filename);
+        }
+        $post->update($data);
+        
+        //$request->session()->flash('status', 'Registro Actualizado');
+        return to_route('post.index')->with('status', 'Registro actualizado');
     }
 
     /**
@@ -115,6 +135,8 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        
+        $post->delete();
+        return to_route('post.index')->with('status', 'Registro eliminado');
     }
 }
