@@ -39,7 +39,7 @@
                         <a href="{{ route('post.edit', $p) }}">Editar</a>
                         <a href="{{ route('post.show', $p) }}">Ver</a>
 
-                        <form action="{{ route('post.destroy', $p) }}">
+                        <form action="{{ route('post.destroy', $p) }}" method="post">
                             @method('DELETE')
                             @csrf
 
@@ -55,7 +55,7 @@
         </tbody>
     </table>
 
-    {{ $posts->links()}}
+    {{ $posts->links()}} 
 
     
 @endsection

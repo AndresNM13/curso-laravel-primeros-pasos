@@ -24,7 +24,7 @@ class PostController extends Controller
     {
         //dd(Category::find(1)->posts);
         
-        $posts = Post::paginate(2);
+        $posts = Post::paginate(2); //esto + linea en index.blade son para dividir registros mostrados
         return view('dashboard.post.index', compact('posts'));
         
     }
